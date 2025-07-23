@@ -40,6 +40,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
       color: 'green',
       positions: [
         { value: 'CDM', label: '수비형 미드필더', description: 'Central Defensive Mid' },
+        { value: 'CM', label: '중앙 미드필더', description: 'Central Midfielder' },
         { value: 'CAM', label: '공격형 미드필더', description: 'Central Attacking Mid' }
       ]
     },

@@ -9,7 +9,7 @@ const POSITIONS = [
   'CB', 'LB', 'RB',
   
   // 미드필더
-  'CDM', 'CAM',
+  'CDM', 'CM', 'CAM',
   
   // 공격수
   'LW', 'RW', 'CF'

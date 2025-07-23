@@ -24,6 +24,7 @@ const UserProfile = () => {
     
     // 미드필더
     'CDM': { label: '수비형 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'CM': { label: '중앙 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     'CAM': { label: '공격형 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     
     // 공격수
@@ -39,7 +40,6 @@ const UserProfile = () => {
     // 제거된 포지션들의 호환성 매핑
     'LWB': { label: '풀백 (왼쪽)', category: '수비수', color: 'blue', icon: '🛡' },
     'RWB': { label: '풀백 (오른쪽)', category: '수비수', color: 'blue', icon: '🛡' },
-    'CM': { label: '중앙 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     'LM': { label: '미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     'RM': { label: '미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     'ST': { label: '센터 포워드', category: '공격수', color: 'red', icon: '🚀' }
