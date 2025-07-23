@@ -1,9 +1,17 @@
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import ProfileEditForm from './ProfileEditForm';
 
 const UserProfile = () => {
   const { user, logout } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
 
   if (!user) return null;
+
+  // 편집 모드일 때는 편집 폼을 표시
+  if (isEditing) {
+    return <ProfileEditForm onCancel={() => setIsEditing(false)} />;
+  }
 
   const getPositionKorean = (position: string) => {
     const positionMap: { [key: string]: string } = {
@@ -30,11 +38,19 @@ const UserProfile = () => {
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-800">프로필</h2>
-        {user.is_admin && (
-          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-            관리자
-          </span>
-        )}
+        <div className="flex items-center space-x-2">
+          {user.is_admin && (
+            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              관리자
+            </span>
+          )}
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-green-600 hover:text-green-700 text-sm font-medium"
+          >
+            편집
+          </button>
+        </div>
       </div>
       
       {/* 프로필 이미지 섹션 */}
@@ -81,7 +97,7 @@ const UserProfile = () => {
               {user.position_sub.map((pos, index) => (
                 <span 
                   key={index}
-                  className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm"
+                  className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm"
                 >
                   {getPositionKorean(pos)}
                 </span>

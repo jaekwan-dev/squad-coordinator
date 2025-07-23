@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -85,6 +86,31 @@ export class AuthService {
         profile_image: user.profile_image,
       },
     };
+  }
+
+  async updateProfile(userId: string, updateProfileDto: UpdateProfileDto) {
+    console.log('🔍 [Profile Update] Starting profile update for user:', userId);
+    console.log('🔍 [Profile Update] Update data:', updateProfileDto);
+    
+    try {
+      const updatedUser = await this.usersService.update(userId, updateProfileDto);
+      console.log('✅ [Profile Update] Profile updated successfully');
+      
+      return {
+        user: {
+          id: updatedUser.id,
+          name: updatedUser.name,
+          position_main: updatedUser.position_main,
+          position_sub: updatedUser.position_sub,
+          level: updatedUser.level,
+          is_admin: updatedUser.is_admin,
+          profile_image: updatedUser.profile_image,
+        },
+      };
+    } catch (error) {
+      console.error('❌ [Profile Update] Failed to update profile:', error);
+      throw error;
+    }
   }
 
   async validateUser(payload: any): Promise<any> {

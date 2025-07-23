@@ -1,7 +1,8 @@
-import { Controller, Get, Post, UseGuards, Req, Res, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Patch, UseGuards, Req, Res, Body } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Response } from 'express';
 
 @ApiTags('Authentication')
@@ -47,5 +48,17 @@ export class AuthController {
   @ApiOperation({ summary: '사용자 프로필 조회' })
   async getProfile(@Req() req) {
     return req.user;
+  }
+
+  @Patch('profile')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: '사용자 프로필 수정 (포지션 정보)' })
+  @ApiBody({ type: UpdateProfileDto })
+  @ApiResponse({ status: 200, description: '프로필 수정 성공' })
+  @ApiResponse({ status: 400, description: '잘못된 요청 데이터' })
+  @ApiResponse({ status: 401, description: '인증 실패' })
+  async updateProfile(@Req() req, @Body() updateProfileDto: UpdateProfileDto) {
+    const userId = req.user.id;
+    return this.authService.updateProfile(userId, updateProfileDto);
   }
 } 

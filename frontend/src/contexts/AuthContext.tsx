@@ -18,6 +18,7 @@ interface AuthContextType {
   login: () => void;
   logout: () => void;
   refreshUser: () => Promise<void>;
+  updateProfile: (profileData: { position_main?: string; position_sub?: string[] }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -107,13 +108,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const updateProfile = async (profileData: { position_main?: string; position_sub?: string[] }) => {
+    try {
+      console.log('🔍 [Profile Update] Updating profile:', profileData);
+      
+      const response = await axios.patch('/auth/profile', profileData);
+      
+      // 업데이트된 사용자 정보로 상태 갱신
+      setUser(response.data.user);
+      
+      console.log('✅ [Profile Update] Profile updated successfully');
+      toast.success('프로필이 성공적으로 업데이트되었습니다!');
+    } catch (error) {
+      console.error('❌ [Profile Update] Failed to update profile:', error);
+      toast.error('프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
       isLoading,
       login,
       logout,
-      refreshUser
+      refreshUser,
+      updateProfile
     }}>
       {children}
     </AuthContext.Provider>
