@@ -1,49 +1,187 @@
-# 🛠️ NestJS Backend 개발 패턴
+# 🏗️ NestJS 백엔드 개발 패턴
 
-## 📂 모듈 구조 패턴
-각 기능별 모듈은 다음 구조를 따릅니다:
-```
-modules/[module-name]/
-├── [module-name].module.ts     # 모듈 정의
-├── [module-name].controller.ts # HTTP 엔드포인트
-├── [module-name].service.ts    # 비즈니스 로직
-├── dto/                        # 데이터 전송 객체
-│   ├── create-[name].dto.ts
-│   └── update-[name].dto.ts
-└── strategies/                 # 인증 전략 (auth 모듈만)
-```
+## 모듈 구조
 
-## 🔒 인증 패턴
-- **JWT Guard**: `@UseGuards(AuthGuard('jwt'))` 사용
-- **Public Route**: 인증이 필요 없는 엔드포인트는 별도 데코레이터 필요시 생성
-- **User Object**: `@Req() req`에서 `req.user`로 현재 사용자 접근
+### 핵심 모듈들
+- **AppModule** ([backend/src/app.module.ts](mdc:backend/src/app.module.ts)): 루트 모듈
+- **AuthModule** ([backend/src/modules/auth/](mdc:backend/src/modules/auth/)): 인증 관련
+- **UsersModule** ([backend/src/modules/users/](mdc:backend/src/modules/users/)): 사용자 관리
 
-## 📝 API 문서화
-- 모든 컨트롤러에 `@ApiTags()` 추가
-- 각 엔드포인트에 `@ApiOperation()`, `@ApiResponse()` 추가
-- DTO 클래스에 `@ApiProperty()` 사용
-
-## 🛡️ 에러 처리
-- 비즈니스 로직 에러: `throw new BadRequestException()`
-- 찾을 수 없음: `throw new NotFoundException()`
-- 권한 없음: `throw new UnauthorizedException()`
-
-## 🔗 Supabase 연동 패턴
+### 모듈 패턴
 ```typescript
-// Service에서 Supabase 클라이언트 사용
-constructor(private readonly configService: ConfigService) {
-  this.supabase = createClient(
-    configService.get<string>('SUPABASE_URL'),
-    configService.get<string>('SUPABASE_SERVICE_KEY')
-  );
+@Module({
+  imports: [UsersModule, PassportModule, JwtModule.registerAsync({...})],
+  controllers: [AuthController],
+  providers: [AuthService, KakaoStrategy, JwtStrategy],
+  exports: [AuthService],
+})
+export class AuthModule {}
+```
+
+## 서비스 패턴
+
+### 의존성 주입
+```typescript
+@Injectable()
+export class AuthService {
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 }
 ```
 
-## 📋 DTO 검증 패턴
-- `class-validator` 데코레이터 사용: `@IsString()`, `@IsEmail()` 등
-- 배열 검증: `@IsArray()`, `@IsString({ each: true })`
-- 조건부 검증: `@IsOptional()` 사용
-description:
-globs:
-alwaysApply: false
----
+### 환경변수 사용
+```typescript
+@Injectable()
+export class UsersService {
+  constructor(private readonly configService: ConfigService) {
+    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
+    const supabaseKey = this.configService.get<string>('SUPABASE_SERVICE_KEY');
+    
+    // 환경변수 검증
+    if (!supabaseUrl) {
+      throw new Error('SUPABASE_URL environment variable is required');
+    }
+  }
+}
+```
+
+## 컨트롤러 패턴
+
+### REST API 설계
+```typescript
+@ApiTags('Authentication')
+@Controller('auth')
+export class AuthController {
+  @Get('kakao')
+  @UseGuards(AuthGuard('kakao'))
+  @ApiOperation({ summary: '카카오 로그인 시작' })
+  async kakaoLogin() {}
+
+  @Get('kakao/callback')
+  @UseGuards(AuthGuard('kakao'))
+  async kakaoCallback(@Req() req, @Res() res: Response) {}
+}
+```
+
+### 응답 처리
+```typescript
+async kakaoCallback(@Req() req, @Res() res: Response) {
+  const loginResult = await this.authService.login(req.user);
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const token = loginResult.access_token;
+  
+  res.redirect(`${frontendUrl}/auth/success?token=${token}`);
+}
+```
+
+## 인증 & 보안
+
+### Passport 전략
+```typescript
+@Injectable()
+export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
+  ) {
+    super({
+      clientID: configService.get<string>('KAKAO_CLIENT_ID'),
+      clientSecret: configService.get<string>('KAKAO_CLIENT_SECRET'),
+      callbackURL: configService.get<string>('KAKAO_CALLBACK_URL'),
+    });
+  }
+}
+```
+
+### JWT 토큰 생성
+```typescript
+async login(user: any) {
+  const payload = { 
+    sub: user.id, 
+    name: user.name,
+    is_admin: user.is_admin 
+  };
+  
+  return {
+    access_token: this.jwtService.sign(payload),
+    user: { /* 사용자 정보 */ },
+  };
+}
+```
+
+## 데이터베이스 (Supabase)
+
+### 클라이언트 초기화
+```typescript
+constructor(private readonly configService: ConfigService) {
+  const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
+  const supabaseKey = this.configService.get<string>('SUPABASE_SERVICE_KEY');
+  
+  this.supabase = createClient(supabaseUrl, supabaseKey);
+}
+```
+
+### CRUD 작업
+```typescript
+async create(createUserDto: CreateUserDto) {
+  const { data, error } = await this.supabase
+    .from('users')
+    .insert(createUserDto)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create user: ${error.message}`);
+  }
+  return data;
+}
+```
+
+## 에러 처리 & 로깅
+
+### 구조화된 로깅
+```typescript
+async validateKakaoUser(kakaoProfile: any): Promise<any> {
+  try {
+    console.log('🔍 [Kakao Auth] Starting validation process...');
+    console.log('🔍 [Kakao Auth] Profile data:', { kakaoId, username });
+    
+    // 비즈니스 로직
+    
+    console.log('✅ [Kakao Auth] Validation completed successfully');
+    return user;
+  } catch (error) {
+    console.error('❌ [Kakao Auth] Validation failed:', error);
+    console.error('❌ [Kakao Auth] Error stack:', error.stack);
+    throw error;
+  }
+}
+```
+
+### 환경변수 디버깅
+```typescript
+console.log('🔍 Environment Variables Check:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('SUPABASE_URL:', supabaseUrl ? 'Set ✅' : 'Missing ❌');
+console.log('SUPABASE_SERVICE_KEY:', supabaseKey ? 'Set ✅' : 'Missing ❌');
+```
+
+## CORS 설정
+
+### 프로덕션 대응 CORS
+```typescript
+// main.ts에서 CORS 설정
+app.enableCors({
+  origin: [
+    'http://localhost:3000',
+    'https://localhost:3000',
+    process.env.FRONTEND_URL,
+    /\.vercel\.app$/,
+    /\.render\.com$/,
+    /\.onrender\.com$/,
+  ].filter(Boolean),
+  credentials: true,
+});
+```

@@ -1,42 +1,35 @@
-# 🏗️ SoccerSquad 프로젝트 구조
+# ⚽ FC Bro Manager 프로젝트 구조
 
-## 📁 디렉토리 구조
-```
-fc-bro-manager/
-├── backend/           # NestJS API 서버
-│   ├── src/
-│   │   ├── modules/   # 기능별 모듈 (auth, users, matches, teams)
-│   │   ├── common/    # 공통 DTO, 가드, 인터셉터
-│   │   └── main.ts    # 애플리케이션 진입점
-│   └── package.json
-├── frontend/          # React + Vite 클라이언트
-│   ├── src/
-│   │   ├── components/  # 재사용 가능한 UI 컴포넌트
-│   │   ├── contexts/    # React Context (AuthContext 등)
-│   │   ├── pages/       # 페이지 컴포넌트
-│   │   ├── hooks/       # 커스텀 훅
-│   │   ├── lib/         # 유틸리티 (shadcn/ui utils 등)
-│   │   └── utils/       # 일반 유틸리티 함수
-│   └── package.json
-└── PRD.md            # 제품 요구사항 명세서
-```
+## 프로젝트 개요
+- **이름**: FC Bro Manager (축구 동호회 관리 시스템)
+- **목적**: 축구 동호회의 팀원 관리, 경기 일정, 출석 투표, 자동 팀 편성
+- **언어**: 모든 응답은 **한국어**로 제공
 
-## 🔗 주요 기술 스택
-- **Backend**: NestJS + TypeScript + Supabase + JWT + Passport
-- **Frontend**: React 18 + Vite + TypeScript + TailwindCSS + shadcn/ui
-- **Auth**: 카카오 OAuth 2.0 + JWT 토큰
-- **Database**: Supabase PostgreSQL
-- **Deployment**: Backend (Supabase), Frontend (Vercel)
+## 기술 스택
 
-## 🎯 핵심 기능 모듈
-1. **Auth Module** - 카카오 로그인, JWT 인증 ([backend/src/modules/auth/](mdc:backend/src/modules/auth/))
-2. **Users Module** - 사용자 관리, 프로필 ([backend/src/modules/users/](mdc:backend/src/modules/users/))
-3. **AuthContext** - React 인증 상태 관리 ([frontend/src/contexts/AuthContext.tsx](mdc:frontend/src/contexts/AuthContext.tsx))
+### Frontend ([frontend/](mdc:frontend/))
+- **React 18** + **TypeScript**
+- **Vite** (빌드 도구)
+- **TailwindCSS** (스타일링)
+- **shadcn/ui** (UI 컴포넌트)
+- **배포**: Vercel
 
-## 📋 개발 우선순위
-현재 완료: ✅ 카카오 로그인 시스템
-다음 단계: 🔄 사용자 프로필 편집, 경기 일정 관리, 출석 투표, 자동 팀 편성
-description:
-globs:
-alwaysApply: false
----
+### Backend ([backend/](mdc:backend/))
+- **NestJS** + **TypeScript**  
+- **Supabase** (데이터베이스)
+- **카카오 OAuth API** (소셜 로그인)
+- **배포**: Render
+
+## 핵심 파일들
+- 프로젝트 요구사항: [PRD.md](mdc:PRD.md)
+- 설정 가이드: [SETUP.md](mdc:SETUP.md)
+- 카카오 설정: [KAKAO_SETUP.md](mdc:KAKAO_SETUP.md)
+- 백엔드 앱 모듈: [backend/src/app.module.ts](mdc:backend/src/app.module.ts)
+- 프론트엔드 메인: [frontend/src/App.tsx](mdc:frontend/src/App.tsx)
+
+## 주요 기능
+1. **카카오 소셜 로그인** ✅ 구현 완료
+2. **팀원 등록 및 포지션 관리** 🔄 개발 중
+3. **경기 일정 및 출석 투표** 🔄 개발 중  
+4. **자동 팀 편성 알고리즘** 🔄 개발 중
+5. **관리자 기능** 🔄 개발 중

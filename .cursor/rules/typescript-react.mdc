@@ -1,0 +1,144 @@
+# 📝 TypeScript & React 개발 가이드
+
+## TypeScript 설정
+
+### 컴파일러 옵션
+- **Strict 모드**: 활성화됨
+- **Target**: ES2020
+- **Module**: ESNext (Frontend), CommonJS (Backend)
+
+### Import 구문 규칙
+```typescript
+// ✅ 올바른 import
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+// ❌ 잘못된 import  
+import Toaster from 'react-hot-toast'; // 빌드 에러 발생
+```
+
+## React 컴포넌트 패턴
+
+### 함수형 컴포넌트 (권장)
+```typescript
+interface Props {
+  title: string;
+  isActive?: boolean;
+}
+
+const MyComponent: React.FC<Props> = ({ title, isActive = false }) => {
+  return <div>{title}</div>;
+};
+
+export default MyComponent;
+```
+
+### Hooks 사용법
+```typescript
+// Context 사용
+const { user, isLoading, login, logout } = useAuth();
+
+// State 관리
+const [isOpen, setIsOpen] = useState<boolean>(false);
+
+// Effect 사용
+useEffect(() => {
+  // 초기화 로직
+}, []);
+```
+
+## 스타일링
+
+### TailwindCSS 클래스 사용
+```typescript
+<div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+  <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg">
+    카카오 로그인
+  </button>
+</div>
+```
+
+### 조건부 스타일링
+```typescript
+<span className={`text-sm px-2 py-1 rounded-full ${
+  user.is_admin ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+}`}>
+  {user.is_admin ? '관리자' : '일반 사용자'}
+</span>
+```
+
+## 환경변수 사용
+
+### Frontend (Vite)
+```typescript
+// ✅ 올바른 환경변수 사용
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID;
+
+// ❌ 잘못된 사용
+const API_URL = process.env.VITE_API_BASE_URL; // Vite에서는 작동하지 않음
+```
+
+### Backend (NestJS)
+```typescript
+// ConfigService 사용
+constructor(private readonly configService: ConfigService) {
+  const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
+  const supabaseKey = this.configService.get<string>('SUPABASE_SERVICE_KEY');
+}
+```
+
+## 에러 처리
+
+### Try-Catch 패턴
+```typescript
+async validateKakaoUser(kakaoProfile: any): Promise<any> {
+  try {
+    console.log('🔍 [Kakao Auth] Starting validation process...');
+    // 비즈니스 로직
+    return user;
+  } catch (error) {
+    console.error('❌ [Kakao Auth] Validation failed:', error);
+    throw error;
+  }
+}
+```
+
+### React 에러 바운더리
+```typescript
+// 에러 발생 시 토스트 메시지 표시
+if (error) {
+  toast.error('로그인 중 오류가 발생했습니다.');
+  return;
+}
+```
+
+## 성능 최적화
+
+### 지연 로딩
+```typescript
+// 컴포넌트 지연 로딩
+const LazyComponent = React.lazy(() => import('./LazyComponent'));
+
+// 사용
+<Suspense fallback={<div>로딩 중...</div>}>
+  <LazyComponent />
+</Suspense>
+```
+
+### 메모이제이션
+```typescript
+// useMemo 사용
+const expensiveValue = useMemo(() => {
+  return computeExpensiveValue(props);
+}, [props.dependency]);
+
+// useCallback 사용  
+const handleClick = useCallback(() => {
+  onClick(id);
+}, [onClick, id]);
+```
+description:
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,54 @@
+# 🖥️ Windows 개발 환경 설정
+
+## 운영체제 정보
+- **OS**: Windows 10/11
+- **Shell**: PowerShell (기본)
+- **터미널**: Windows Terminal 권장
+
+## PowerShell 명령어 사용법
+
+### 기본 명령어 차이점
+| Linux/Mac | Windows PowerShell |
+|-----------|-------------------|
+| `ls -la` | `ls` 또는 `dir` |
+| `cd dir && command` | `cd dir; command` |
+| `export VAR=value` | `$env:VAR="value"` |
+| `which command` | `Get-Command command` |
+
+### 개발 서버 실행
+```powershell
+# 백엔드 서버 실행
+cd backend; npm run start:dev
+
+# 프론트엔드 서버 실행  
+cd frontend; npm run dev
+
+# 동시 실행은 별도 터미널 창 사용
+```
+
+### Git 명령어
+```powershell
+# 기본 Git 워크플로우
+git add .
+git commit -m "커밋 메시지"
+git push origin main
+```
+
+### 파일 시스템
+- **경로 구분자**: `\` (백슬래시)
+- **절대 경로**: `C:\Users\사용자명\...`
+- **상대 경로**: PowerShell에서는 `/`도 지원
+
+## 환경변수 파일
+- **백엔드**: `backend\.env` (직접 생성 필요)
+- **프론트엔드**: `frontend\.env.local` (직접 생성 필요)
+- 보안상 이유로 `.env` 파일들은 자동 생성되지 않음
+
+## 포트 사용
+- **백엔드**: http://localhost:3001
+- **프론트엔드**: http://localhost:3000
+- **API 문서**: http://localhost:3001/api-docs
+description:
+globs:
+alwaysApply: false
+---
