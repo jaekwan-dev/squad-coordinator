@@ -1,0 +1,107 @@
+# 🚀 개발 워크플로우
+
+## 🔄 개발 서버 실행 순서
+
+### 1단계: 환경 설정
+```bash
+# 환경변수 파일 생성 (최초 1회)
+cp backend/.env.example backend/.env
+cp frontend/.env.local.example frontend/.env.local
+
+# 실제 키 값으로 수정 필요
+# - 카카오 개발자 콘솔에서 키 발급
+# - Supabase 프로젝트에서 키 복사
+```
+
+### 2단계: 의존성 설치
+```bash
+# Backend
+cd backend && npm install
+
+# Frontend  
+cd frontend && npm install
+```
+
+### 3단계: 서버 실행
+```bash
+# Terminal 1: Backend (포트 3001)
+cd backend && npm run start:dev
+
+# Terminal 2: Frontend (포트 3000)
+cd frontend && npm run dev
+```
+
+## 🧪 테스트 시나리오
+
+### 로그인 테스트 체크리스트
+- [ ] http://localhost:3000 접속
+- [ ] 카카오 로그인 버튼 표시 확인
+- [ ] 로그인 버튼 클릭 → 카카오 인증 페이지 이동
+- [ ] 카카오 계정으로 인증 완료
+- [ ] 자동 리다이렉트 → "로그인 성공!" 토스트
+- [ ] 사용자 프로필 카드 표시 확인
+- [ ] 로그아웃 → 로그인 화면으로 복귀
+
+### API 문서 확인
+- Backend Swagger: http://localhost:3001/api-docs
+- 주요 엔드포인트 테스트:
+  - `GET /auth/profile` (JWT 토큰 필요)
+  - `GET /users` (관리자 권한 테스트)
+
+## 🐛 디버깅 가이드
+
+### 자주 발생하는 오류와 해결방법
+
+#### 1. "카카오 앱키가 없습니다"
+```bash
+# 해결: Frontend .env.local 확인
+VITE_KAKAO_CLIENT_ID=실제-자바스크립트-키-입력
+```
+
+#### 2. CORS 에러
+```bash
+# 해결: Backend가 3001 포트에서 실행 중인지 확인
+# 카카오 콜백 URL: http://localhost:3001/auth/kakao/callback
+```
+
+#### 3. "토큰이 무효합니다"  
+```bash
+# 해결: JWT_SECRET 일치 확인
+# Backend .env 파일의 JWT_SECRET 값 확인
+```
+
+#### 4. Supabase 연결 오류
+```bash
+# 해결: Supabase 환경변수 확인
+SUPABASE_URL=https://프로젝트ID.supabase.co
+SUPABASE_SERVICE_KEY=실제-서비스-키-입력
+```
+
+## 📝 코드 품질 관리
+
+### Linting & 포맷팅
+```bash
+# Backend
+npm run lint          # ESLint 검사
+npm run format         # Prettier 포맷팅
+
+# Frontend  
+npm run lint          # ESLint 검사
+```
+
+### 코드 리뷰 포인트
+- [ ] 환경변수 하드코딩 없음
+- [ ] API 응답 에러 처리 완료
+- [ ] TypeScript 타입 정의 완료
+- [ ] 보안 규칙 준수 (키 노출 없음)
+- [ ] UI/UX 일관성 확인
+
+## 🔄 다음 개발 단계 우선순위
+1. **사용자 프로필 편집** - 포지션/레벨 변경 기능
+2. **경기 일정 관리** - CRUD + 관리자 권한
+3. **출석 투표 시스템** - 실시간 투표 현황
+4. **자동 팀 편성** - 알고리즘 구현
+description:
+globs:
+alwaysApply: false
+---

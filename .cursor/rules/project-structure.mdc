@@ -1,0 +1,42 @@
+# 🏗️ SoccerSquad 프로젝트 구조
+
+## 📁 디렉토리 구조
+```
+fc-bro-manager/
+├── backend/           # NestJS API 서버
+│   ├── src/
+│   │   ├── modules/   # 기능별 모듈 (auth, users, matches, teams)
+│   │   ├── common/    # 공통 DTO, 가드, 인터셉터
+│   │   └── main.ts    # 애플리케이션 진입점
+│   └── package.json
+├── frontend/          # React + Vite 클라이언트
+│   ├── src/
+│   │   ├── components/  # 재사용 가능한 UI 컴포넌트
+│   │   ├── contexts/    # React Context (AuthContext 등)
+│   │   ├── pages/       # 페이지 컴포넌트
+│   │   ├── hooks/       # 커스텀 훅
+│   │   ├── lib/         # 유틸리티 (shadcn/ui utils 등)
+│   │   └── utils/       # 일반 유틸리티 함수
+│   └── package.json
+└── PRD.md            # 제품 요구사항 명세서
+```
+
+## 🔗 주요 기술 스택
+- **Backend**: NestJS + TypeScript + Supabase + JWT + Passport
+- **Frontend**: React 18 + Vite + TypeScript + TailwindCSS + shadcn/ui
+- **Auth**: 카카오 OAuth 2.0 + JWT 토큰
+- **Database**: Supabase PostgreSQL
+- **Deployment**: Backend (Supabase), Frontend (Vercel)
+
+## 🎯 핵심 기능 모듈
+1. **Auth Module** - 카카오 로그인, JWT 인증 ([backend/src/modules/auth/](mdc:backend/src/modules/auth/))
+2. **Users Module** - 사용자 관리, 프로필 ([backend/src/modules/users/](mdc:backend/src/modules/users/))
+3. **AuthContext** - React 인증 상태 관리 ([frontend/src/contexts/AuthContext.tsx](mdc:frontend/src/contexts/AuthContext.tsx))
+
+## 📋 개발 우선순위
+현재 완료: ✅ 카카오 로그인 시스템
+다음 단계: 🔄 사용자 프로필 편집, 경기 일정 관리, 출석 투표, 자동 팀 편성
+description:
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,49 @@
+# 🛠️ NestJS Backend 개발 패턴
+
+## 📂 모듈 구조 패턴
+각 기능별 모듈은 다음 구조를 따릅니다:
+```
+modules/[module-name]/
+├── [module-name].module.ts     # 모듈 정의
+├── [module-name].controller.ts # HTTP 엔드포인트
+├── [module-name].service.ts    # 비즈니스 로직
+├── dto/                        # 데이터 전송 객체
+│   ├── create-[name].dto.ts
+│   └── update-[name].dto.ts
+└── strategies/                 # 인증 전략 (auth 모듈만)
+```
+
+## 🔒 인증 패턴
+- **JWT Guard**: `@UseGuards(AuthGuard('jwt'))` 사용
+- **Public Route**: 인증이 필요 없는 엔드포인트는 별도 데코레이터 필요시 생성
+- **User Object**: `@Req() req`에서 `req.user`로 현재 사용자 접근
+
+## 📝 API 문서화
+- 모든 컨트롤러에 `@ApiTags()` 추가
+- 각 엔드포인트에 `@ApiOperation()`, `@ApiResponse()` 추가
+- DTO 클래스에 `@ApiProperty()` 사용
+
+## 🛡️ 에러 처리
+- 비즈니스 로직 에러: `throw new BadRequestException()`
+- 찾을 수 없음: `throw new NotFoundException()`
+- 권한 없음: `throw new UnauthorizedException()`
+
+## 🔗 Supabase 연동 패턴
+```typescript
+// Service에서 Supabase 클라이언트 사용
+constructor(private readonly configService: ConfigService) {
+  this.supabase = createClient(
+    configService.get<string>('SUPABASE_URL'),
+    configService.get<string>('SUPABASE_SERVICE_KEY')
+  );
+}
+```
+
+## 📋 DTO 검증 패턴
+- `class-validator` 데코레이터 사용: `@IsString()`, `@IsEmail()` 등
+- 배열 검증: `@IsArray()`, `@IsString({ each: true })`
+- 조건부 검증: `@IsOptional()` 사용
+description:
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,64 @@
+# 🔐 환경변수 & 보안 가이드
+
+## 📋 환경변수 분리 원칙
+
+### Backend (.env)
+```bash
+# ✅ 서버에서만 사용 (절대 프론트엔드 노출 금지)
+SUPABASE_SERVICE_KEY=        # 서비스 키 (강력한 권한)
+KAKAO_CLIENT_SECRET=         # 카카오 클라이언트 시크릿
+JWT_SECRET=                  # JWT 서명 키
+```
+
+### Frontend (.env.local)
+```bash
+# ✅ 브라우저에서 사용 가능 (공개되어도 안전한 키만)
+VITE_SUPABASE_URL=           # Supabase 프로젝트 URL
+VITE_SUPABASE_ANON_KEY=      # 익명 키 (제한된 권한)
+VITE_KAKAO_CLIENT_ID=        # 카카오 JavaScript 키
+VITE_API_BASE_URL=           # 백엔드 API 주소
+```
+
+## ⚠️ 보안 주의사항
+
+### 🚫 절대 금지사항
+1. **SERVICE_KEY를 프론트엔드에 노출**: Supabase 전체 권한 탈취 위험
+2. **CLIENT_SECRET을 프론트엔드에 사용**: 카카오 앱 권한 탈취 위험
+3. **JWT_SECRET 노출**: 토큰 위조 가능
+4. **.env 파일을 Git에 커밋**: 키 정보 공개 위험
+
+### ✅ 보안 모범 사례
+1. **키 타입 구분**: JavaScript 키 vs REST API 키 vs 서비스 키
+2. **환경별 분리**: 개발/스테이징/프로덕션 환경별 다른 키 사용
+3. **최소 권한 원칙**: 필요한 최소한의 권한만 부여
+4. **키 순환**: 정기적인 키 변경
+
+## 🔑 카카오 키 사용 가이드
+```typescript
+// ✅ 올바른 사용
+// Backend: KAKAO_CLIENT_ID (REST API 키)
+// Frontend: VITE_KAKAO_CLIENT_ID (JavaScript 키)
+
+// ❌ 잘못된 사용  
+// Frontend에서 REST API 키나 CLIENT_SECRET 사용
+```
+
+## 📁 Git 보안 설정
+```bash
+# .gitignore에 반드시 포함
+.env
+.env.local
+.env.*.local
+**/.env
+```
+
+## 🔄 키 관리 체크리스트
+- [ ] Supabase 프로젝트별 키 발급
+- [ ] 카카오 개발/운영 환경별 앱 생성
+- [ ] JWT_SECRET 강력한 랜덤 문자열로 설정
+- [ ] 프로덕션 배포 시 모든 키 변경
+- [ ] 환경변수 파일 Git 제외 확인
+description:
+globs:
+alwaysApply: false
+---

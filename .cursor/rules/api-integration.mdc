@@ -1,0 +1,126 @@
+# 🔗 API 통합 패턴
+
+## 🎯 카카오 OAuth 플로우
+
+### Backend (NestJS)
+```typescript
+// 1. 카카오 로그인 시작
+@Get('kakao')
+@UseGuards(AuthGuard('kakao'))
+async kakaoLogin() {
+  // 카카오 인증 페이지로 리다이렉트
+}
+
+// 2. 콜백 처리 및 JWT 발급
+@Get('kakao/callback')  
+@UseGuards(AuthGuard('kakao'))
+async kakaoCallback(@Req() req, @Res() res) {
+  const loginResult = await this.authService.login(req.user);
+  res.redirect(`${FRONTEND_URL}/auth/success?token=${loginResult.access_token}`);
+}
+```
+
+### Frontend (React)
+```typescript
+// 1. 로그인 버튼 클릭
+const login = () => {
+  window.location.href = `${API_BASE_URL}/auth/kakao`;
+};
+
+// 2. 콜백에서 토큰 처리
+useEffect(() => {
+  const token = new URLSearchParams(window.location.search).get('token');
+  if (token) {
+    localStorage.setItem('access_token', token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
+}, []);
+```
+
+## 🗄️ Supabase 데이터베이스 패턴
+
+### 사용자 테이블 구조
+```sql
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,              -- kakao_123456
+  name TEXT NOT NULL,               -- 사용자 이름
+  position_main TEXT NOT NULL,      -- GK, DF, MF, FW
+  position_sub TEXT[],              -- 부 포지션 배열
+  level INTEGER DEFAULT 3,          -- 1-5 실력 레벨
+  is_admin BOOLEAN DEFAULT FALSE,   -- 관리자 권한
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Service 계층 패턴
+```typescript
+// ✅ 올바른 Supabase 사용
+async create(createUserDto: CreateUserDto) {
+  const { data, error } = await this.supabase
+    .from('users')
+    .insert(createUserDto)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create user: ${error.message}`);
+  }
+  return data;
+}
+```
+
+## 🔐 JWT 토큰 관리
+
+### 토큰 검증 플로우
+```typescript
+// Backend: JWT Strategy
+async validate(payload: any) {
+  const user = await this.usersService.findByKakaoId(payload.sub);
+  if (!user) {
+    throw new UnauthorizedException('Invalid token');
+  }
+  return user;
+}
+
+// Frontend: 토큰 자동 갱신
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // 토큰 만료 처리
+      localStorage.removeItem('access_token');
+      window.location.href = '/';
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+## 📊 에러 처리 패턴
+
+### Backend 에러 응답
+```typescript
+// Supabase 에러 변환
+if (error && error.code !== 'PGRST116') { // 데이터 없음 에러 제외
+  throw new Error(`Database error: ${error.message}`);
+}
+
+// HTTP 상태 코드 활용
+throw new NotFoundException(`User with ID ${id} not found`);
+throw new BadRequestException('Invalid position format');
+```
+
+### Frontend 에러 핸들링
+```typescript
+try {
+  const response = await axios.get('/auth/profile');
+  setUser(response.data);
+} catch (error) {
+  console.error('사용자 정보 로드 실패:', error);
+  toast.error('사용자 정보를 불러올 수 없습니다.');
+}
+```
+description:
+globs:
+alwaysApply: false
+---

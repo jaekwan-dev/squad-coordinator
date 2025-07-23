@@ -1,0 +1,71 @@
+# ⚛️ React Frontend 개발 패턴
+
+## 🎨 컴포넌트 작성 패턴
+```typescript
+// 함수형 컴포넌트 + TypeScript
+interface Props {
+  title: string;
+  onAction?: () => void;
+}
+
+const MyComponent: React.FC<Props> = ({ title, onAction }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-4">
+      <h2>{title}</h2>
+      {onAction && (
+        <button onClick={onAction} className="btn-primary">
+          Action
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default MyComponent;
+```
+
+## 🔧 Hooks 사용 패턴
+- **인증**: `const { user, login, logout } = useAuth()` 사용
+- **상태 관리**: `useState`, `useEffect` 적극 활용
+- **API 호출**: axios 인스턴스 사용, AuthContext에서 토큰 자동 설정
+
+## 🎯 TailwindCSS + shadcn/ui 패턴
+- **기본 스타일링**: TailwindCSS 클래스 사용
+- **컴포넌트**: shadcn/ui 컴포넌트 우선 사용
+- **커스텀 컴포넌트**: `cn()` 유틸리티로 클래스 병합
+```typescript
+import { cn } from "@/lib/utils";
+className={cn("default-classes", conditionalClass && "additional-class")}
+```
+
+## 🔐 인증 처리 패턴
+- **AuthContext**: 전역 인증 상태 관리
+- **보호된 라우트**: 인증 상태 확인 후 컴포넌트 렌더링
+- **토큰 관리**: localStorage + axios interceptor 사용
+
+## 📱 토스트 알림 패턴
+```typescript
+import toast from 'react-hot-toast';
+
+// 성공
+toast.success('로그인 성공!');
+// 에러
+toast.error('오류가 발생했습니다.');
+// 로딩
+const toastId = toast.loading('처리 중...');
+toast.dismiss(toastId);
+```
+
+## 🚀 성능 최적화
+- **컴포넌트 분리**: 재사용 가능한 작은 컴포넌트로 분리
+- **조건부 렌더링**: `&&` 연산자 또는 삼항 연산자 사용
+- **이벤트 핸들러**: useCallback 사용 고려
+
+## 📂 파일 명명 규칙
+- **컴포넌트**: PascalCase (예: `UserProfile.tsx`)
+- **훅**: camelCase + use 접두어 (예: `useAuth.ts`)
+- **유틸리티**: camelCase (예: `formatDate.ts`)
+description:
+globs:
+alwaysApply: false
+---
