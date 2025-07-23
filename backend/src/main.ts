@@ -6,28 +6,46 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // CORS 활성화
-  app.enableCors();
+  // CORS 설정 (프로덕션 고려)
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'https://localhost:3000',
+      process.env.FRONTEND_URL,
+      /\.vercel\.app$/,
+      /\.railway\.app$/,
+    ].filter(Boolean),
+    credentials: true,
+  });
 
   // 글로벌 검증 파이프 설정
   app.useGlobalPipes(new ValidationPipe());
 
-  // Swagger 설정
-  const config = new DocumentBuilder()
-    .setTitle('SoccerSquad API')
-    .setDescription('축구 동호회 관리 시스템 API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
+  // Swagger 설정 (개발 환경에서만)
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('SoccerSquad API')
+      .setDescription('축구 동호회 관리 시스템 API')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api-docs', app, document);
+  }
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
   
-  console.log(`🚀 SoccerSquad Backend is running on: http://localhost:${port}`);
-  console.log(`📚 API Documentation: http://localhost:${port}/api-docs`);
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? `https://your-app.railway.app` 
+    : `http://localhost:${port}`;
+    
+  console.log(`🚀 SoccerSquad Backend is running on: ${baseUrl}`);
+  
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`📚 API Documentation: ${baseUrl}/api-docs`);
+  }
 }
 
 bootstrap(); 
