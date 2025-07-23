@@ -6,19 +6,19 @@ const POSITIONS = [
   'GK',
   
   // 수비수
-  'CB', 'LB', 'RB', 'LWB', 'RWB',
+  'CB', 'LB', 'RB',
   
   // 미드필더
-  'CDM', 'CM', 'CAM', 'LM', 'RM',
+  'CDM', 'CAM',
   
   // 공격수
-  'LW', 'RW', 'ST', 'CF'
+  'LW', 'RW', 'CF'
 ] as const;
 
 export class UpdateProfileDto {
   @ApiProperty({ 
     description: '주 포지션', 
-    example: 'CM',
+    example: 'CAM',
     enum: POSITIONS
   })
   @IsOptional()
@@ -28,7 +28,7 @@ export class UpdateProfileDto {
 
   @ApiProperty({ 
     description: '부 포지션 배열', 
-    example: ['CAM', 'CDM'],
+    example: ['CDM', 'CF'],
     isArray: true,
     enum: POSITIONS
   })

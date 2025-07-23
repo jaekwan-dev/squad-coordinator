@@ -9,7 +9,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
   const { user, updateProfile } = useAuth();
   
   const [formData, setFormData] = useState({
-    position_main: user?.position_main || 'CM',
+    position_main: user?.position_main || 'CAM',
     position_sub: user?.position_sub || []
   });
   
@@ -30,10 +30,8 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
       color: 'blue',
       positions: [
         { value: 'CB', label: '센터백', description: 'Center Back' },
-        { value: 'LB', label: '왼쪽 풀백', description: 'Left Back' },
-        { value: 'RB', label: '오른쪽 풀백', description: 'Right Back' },
-        { value: 'LWB', label: '왼쪽 윙백', description: 'Left Wing Back' },
-        { value: 'RWB', label: '오른쪽 윙백', description: 'Right Wing Back' }
+        { value: 'LB', label: '풀백 (왼쪽)', description: 'Left Back' },
+        { value: 'RB', label: '풀백 (오른쪽)', description: 'Right Back' }
       ]
     },
     {
@@ -42,10 +40,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
       color: 'green',
       positions: [
         { value: 'CDM', label: '수비형 미드필더', description: 'Central Defensive Mid' },
-        { value: 'CM', label: '중앙 미드필더', description: 'Central Midfielder' },
-        { value: 'CAM', label: '공격형 미드필더', description: 'Central Attacking Mid' },
-        { value: 'LM', label: '왼쪽 미드필더', description: 'Left Midfielder' },
-        { value: 'RM', label: '오른쪽 미드필더', description: 'Right Midfielder' }
+        { value: 'CAM', label: '공격형 미드필더', description: 'Central Attacking Mid' }
       ]
     },
     {
@@ -53,9 +48,8 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
       icon: '🚀',
       color: 'red',
       positions: [
-        { value: 'LW', label: '왼쪽 윙어', description: 'Left Winger' },
-        { value: 'RW', label: '오른쪽 윙어', description: 'Right Winger' },
-        { value: 'ST', label: '스트라이커', description: 'Striker' },
+        { value: 'LW', label: '윙어 (왼쪽)', description: 'Left Winger' },
+        { value: 'RW', label: '윙어 (오른쪽)', description: 'Right Winger' },
         { value: 'CF', label: '센터 포워드', description: 'Center Forward' }
       ]
     }

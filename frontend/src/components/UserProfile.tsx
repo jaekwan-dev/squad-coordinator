@@ -19,28 +19,30 @@ const UserProfile = () => {
     
     // 수비수
     'CB': { label: '센터백', category: '수비수', color: 'blue', icon: '🛡' },
-    'LB': { label: '왼쪽 풀백', category: '수비수', color: 'blue', icon: '🛡' },
-    'RB': { label: '오른쪽 풀백', category: '수비수', color: 'blue', icon: '🛡' },
-    'LWB': { label: '왼쪽 윙백', category: '수비수', color: 'blue', icon: '🛡' },
-    'RWB': { label: '오른쪽 윙백', category: '수비수', color: 'blue', icon: '🛡' },
+    'LB': { label: '풀백 (왼쪽)', category: '수비수', color: 'blue', icon: '🛡' },
+    'RB': { label: '풀백 (오른쪽)', category: '수비수', color: 'blue', icon: '🛡' },
     
     // 미드필더
     'CDM': { label: '수비형 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
-    'CM': { label: '중앙 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     'CAM': { label: '공격형 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
-    'LM': { label: '왼쪽 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
-    'RM': { label: '오른쪽 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     
     // 공격수
-    'LW': { label: '왼쪽 윙어', category: '공격수', color: 'red', icon: '🚀' },
-    'RW': { label: '오른쪽 윙어', category: '공격수', color: 'red', icon: '🚀' },
-    'ST': { label: '스트라이커', category: '공격수', color: 'red', icon: '🚀' },
+    'LW': { label: '윙어 (왼쪽)', category: '공격수', color: 'red', icon: '🚀' },
+    'RW': { label: '윙어 (오른쪽)', category: '공격수', color: 'red', icon: '🚀' },
     'CF': { label: '센터 포워드', category: '공격수', color: 'red', icon: '🚀' },
     
     // 기존 레거시 포지션들 (하위 호환성)
     'DF': { label: '수비수', category: '수비수', color: 'blue', icon: '🛡' },
     'MF': { label: '미드필더', category: '미드필더', color: 'green', icon: '🧠' },
     'FW': { label: '공격수', category: '공격수', color: 'red', icon: '🚀' },
+    
+    // 제거된 포지션들의 호환성 매핑
+    'LWB': { label: '풀백 (왼쪽)', category: '수비수', color: 'blue', icon: '🛡' },
+    'RWB': { label: '풀백 (오른쪽)', category: '수비수', color: 'blue', icon: '🛡' },
+    'CM': { label: '중앙 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'LM': { label: '미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'RM': { label: '미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'ST': { label: '센터 포워드', category: '공격수', color: 'red', icon: '🚀' }
   };
 
   const getPositionInfo = (position: string) => {
