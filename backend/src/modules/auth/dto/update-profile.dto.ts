@@ -1,22 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsArray, IsIn, IsOptional } from 'class-validator';
 
+const POSITIONS = [
+  // 골키퍼
+  'GK',
+  
+  // 수비수
+  'CB', 'LB', 'RB', 'LWB', 'RWB',
+  
+  // 미드필더
+  'CDM', 'CM', 'CAM', 'LM', 'RM',
+  
+  // 공격수
+  'LW', 'RW', 'ST', 'CF'
+] as const;
+
 export class UpdateProfileDto {
   @ApiProperty({ 
     description: '주 포지션', 
-    example: 'MF',
-    enum: ['GK', 'DF', 'MF', 'FW']
+    example: 'CM',
+    enum: POSITIONS
   })
   @IsOptional()
   @IsString()
-  @IsIn(['GK', 'DF', 'MF', 'FW'])
+  @IsIn(POSITIONS)
   position_main?: string;
 
   @ApiProperty({ 
     description: '부 포지션 배열', 
-    example: ['FW', 'DF'],
+    example: ['CAM', 'CDM'],
     isArray: true,
-    enum: ['GK', 'DF', 'MF', 'FW']
+    enum: POSITIONS
   })
   @IsOptional()
   @IsArray()

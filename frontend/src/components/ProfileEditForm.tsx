@@ -9,18 +9,77 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
   const { user, updateProfile } = useAuth();
   
   const [formData, setFormData] = useState({
-    position_main: user?.position_main || 'MF',
+    position_main: user?.position_main || 'CM',
     position_sub: user?.position_sub || []
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const positions = [
-    { value: 'GK', label: '골키퍼', description: 'Goal Keeper' },
-    { value: 'DF', label: '수비수', description: 'Defender' },
-    { value: 'MF', label: '미드필더', description: 'Midfielder' },
-    { value: 'FW', label: '공격수', description: 'Forward' }
+  const positionCategories = [
+    {
+      category: '골키퍼',
+      icon: '⚽',
+      color: 'yellow',
+      positions: [
+        { value: 'GK', label: '골키퍼', description: 'Goalkeeper' }
+      ]
+    },
+    {
+      category: '수비수',
+      icon: '🛡',
+      color: 'blue',
+      positions: [
+        { value: 'CB', label: '센터백', description: 'Center Back' },
+        { value: 'LB', label: '왼쪽 풀백', description: 'Left Back' },
+        { value: 'RB', label: '오른쪽 풀백', description: 'Right Back' },
+        { value: 'LWB', label: '왼쪽 윙백', description: 'Left Wing Back' },
+        { value: 'RWB', label: '오른쪽 윙백', description: 'Right Wing Back' }
+      ]
+    },
+    {
+      category: '미드필더',
+      icon: '🧠',
+      color: 'green',
+      positions: [
+        { value: 'CDM', label: '수비형 미드필더', description: 'Central Defensive Mid' },
+        { value: 'CM', label: '중앙 미드필더', description: 'Central Midfielder' },
+        { value: 'CAM', label: '공격형 미드필더', description: 'Central Attacking Mid' },
+        { value: 'LM', label: '왼쪽 미드필더', description: 'Left Midfielder' },
+        { value: 'RM', label: '오른쪽 미드필더', description: 'Right Midfielder' }
+      ]
+    },
+    {
+      category: '공격수',
+      icon: '🚀',
+      color: 'red',
+      positions: [
+        { value: 'LW', label: '왼쪽 윙어', description: 'Left Winger' },
+        { value: 'RW', label: '오른쪽 윙어', description: 'Right Winger' },
+        { value: 'ST', label: '스트라이커', description: 'Striker' },
+        { value: 'CF', label: '센터 포워드', description: 'Center Forward' }
+      ]
+    }
   ];
+
+  const getColorClasses = (color: string, isSelected: boolean) => {
+    const colorMap = {
+      yellow: isSelected ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200 hover:border-yellow-300',
+      blue: isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300',
+      green: isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300',
+      red: isSelected ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-red-300'
+    };
+    return colorMap[color as keyof typeof colorMap] || colorMap.green;
+  };
+
+  const getBadgeColor = (color: string) => {
+    const colorMap = {
+      yellow: 'bg-yellow-500',
+      blue: 'bg-blue-500',
+      green: 'bg-green-500',
+      red: 'bg-red-500'
+    };
+    return colorMap[color as keyof typeof colorMap] || colorMap.green;
+  };
 
   const handleMainPositionChange = (position: string) => {
     setFormData(prev => ({
@@ -49,6 +108,24 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
     });
   };
 
+  const getSubPositionClasses = (category: any, isMainPosition: boolean, isChecked: boolean) => {
+    if (isMainPosition) {
+      return 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-50';
+    }
+    
+    if (isChecked) {
+      switch (category.color) {
+        case 'yellow': return 'border-yellow-500 bg-yellow-50 cursor-pointer';
+        case 'blue': return 'border-blue-500 bg-blue-50 cursor-pointer';
+        case 'green': return 'border-green-500 bg-green-50 cursor-pointer';
+        case 'red': return 'border-red-500 bg-red-50 cursor-pointer';
+        default: return 'border-green-500 bg-green-50 cursor-pointer';
+      }
+    }
+    
+    return 'border-gray-200 hover:border-gray-300 cursor-pointer';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -66,8 +143,16 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
     }
   };
 
+  const findPositionInfo = (positionValue: string) => {
+    for (const category of positionCategories) {
+      const position = category.positions.find(p => p.value === positionValue);
+      if (position) return { ...position, category: category.category, color: category.color };
+    }
+    return null;
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+    <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto max-h-[90vh] overflow-y-auto">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-800">프로필 편집</h2>
         <button
@@ -81,117 +166,148 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ onCancel }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* 주 포지션 선택 */}
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-3">
+          <label className="block text-sm font-medium text-gray-600 mb-4">
             주 포지션 (필수)
           </label>
-          <div className="grid grid-cols-2 gap-3">
-            {positions.map((position) => (
-              <label
-                key={position.value}
-                className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-colors ${
-                  formData.position_main === position.value
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="position_main"
-                  value={position.value}
-                  checked={formData.position_main === position.value}
-                  onChange={(e) => handleMainPositionChange(e.target.value)}
-                  className="sr-only"
-                />
-                <span className="text-lg font-semibold text-gray-900">
-                  {position.label}
-                </span>
-                <span className="text-xs text-gray-500 mt-1">
-                  {position.description}
-                </span>
-                {formData.position_main === position.value && (
-                  <div className="absolute top-2 right-2 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs">✓</span>
-                  </div>
-                )}
-              </label>
-            ))}
-          </div>
+          
+          {positionCategories.map((category) => (
+            <div key={category.category} className="mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="mr-2">{category.icon}</span>
+                {category.category}
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {category.positions.map((position) => (
+                  <label
+                    key={position.value}
+                    className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-colors ${getColorClasses(category.color, formData.position_main === position.value)}`}
+                  >
+                    <input
+                      type="radio"
+                      name="position_main"
+                      value={position.value}
+                      checked={formData.position_main === position.value}
+                      onChange={(e) => handleMainPositionChange(e.target.value)}
+                      className="sr-only"
+                    />
+                    <span className="text-sm font-semibold text-gray-900 text-center">
+                      {position.label}
+                    </span>
+                    <span className="text-xs text-gray-500 mt-1 text-center">
+                      {position.description}
+                    </span>
+                    {formData.position_main === position.value && (
+                      <div className={`absolute top-2 right-2 w-4 h-4 ${getBadgeColor(category.color)} rounded-full flex items-center justify-center`}>
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* 부 포지션 선택 */}
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-3">
+          <label className="block text-sm font-medium text-gray-600 mb-4">
             부 포지션 (선택사항)
           </label>
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-gray-500 mb-4">
             여러 포지션을 선택할 수 있습니다. 주 포지션은 선택할 수 없습니다.
           </p>
-          <div className="grid grid-cols-2 gap-3">
-            {positions.map((position) => {
-              const isMainPosition = formData.position_main === position.value;
-              const isChecked = formData.position_sub.includes(position.value);
-              
-              return (
-                <label
-                  key={position.value}
-                  className={`relative flex flex-col items-center p-3 border-2 rounded-lg transition-colors ${
-                    isMainPosition
-                      ? 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-50'
-                      : isChecked
-                      ? 'border-blue-500 bg-blue-50 cursor-pointer'
-                      : 'border-gray-200 hover:border-gray-300 cursor-pointer'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    value={position.value}
-                    checked={isChecked}
-                    disabled={isMainPosition}
-                    onChange={(e) => handleSubPositionChange(position.value, e.target.checked)}
-                    className="sr-only"
-                  />
-                  <span className="text-lg font-semibold text-gray-900">
-                    {position.label}
-                  </span>
-                  <span className="text-xs text-gray-500 mt-1">
-                    {position.description}
-                  </span>
-                  {isMainPosition && (
-                    <span className="text-xs text-gray-400 mt-1">주 포지션</span>
-                  )}
-                  {isChecked && !isMainPosition && (
-                    <div className="absolute top-2 right-2 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs">✓</span>
-                    </div>
-                  )}
-                </label>
-              );
-            })}
-          </div>
+          
+          {positionCategories.map((category) => (
+            <div key={`sub-${category.category}`} className="mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="mr-2">{category.icon}</span>
+                {category.category}
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {category.positions.map((position) => {
+                  const isMainPosition = formData.position_main === position.value;
+                  const isChecked = formData.position_sub.includes(position.value);
+                  
+                  return (
+                    <label
+                      key={position.value}
+                      className={`relative flex flex-col items-center p-3 border-2 rounded-lg transition-colors ${getSubPositionClasses(category, isMainPosition, isChecked)}`}
+                    >
+                      <input
+                        type="checkbox"
+                        value={position.value}
+                        checked={isChecked}
+                        disabled={isMainPosition}
+                        onChange={(e) => handleSubPositionChange(position.value, e.target.checked)}
+                        className="sr-only"
+                      />
+                      <span className="text-sm font-semibold text-gray-900 text-center">
+                        {position.label}
+                      </span>
+                      <span className="text-xs text-gray-500 mt-1 text-center">
+                        {position.description}
+                      </span>
+                      {isMainPosition && (
+                        <span className="text-xs text-gray-400 mt-1">주 포지션</span>
+                      )}
+                      {isChecked && !isMainPosition && (
+                        <div className={`absolute top-2 right-2 w-4 h-4 ${getBadgeColor(category.color)} rounded-full flex items-center justify-center`}>
+                          <span className="text-white text-xs">✓</span>
+                        </div>
+                      )}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* 현재 선택 요약 */}
         <div className="bg-gray-50 rounded-lg p-4">
           <h3 className="text-sm font-medium text-gray-700 mb-2">선택 요약</h3>
-          <div className="space-y-1">
-            <p className="text-sm">
-              <span className="font-medium">주 포지션:</span>{' '}
-              <span className="text-green-600">
-                {positions.find(p => p.value === formData.position_main)?.label}
-              </span>
-            </p>
-            <p className="text-sm">
-              <span className="font-medium">부 포지션:</span>{' '}
+          <div className="space-y-2">
+            <div>
+              <span className="text-sm font-medium">주 포지션:</span>{' '}
+              {(() => {
+                const mainInfo = findPositionInfo(formData.position_main);
+                return (
+                  <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                    mainInfo?.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                    mainInfo?.color === 'blue' ? 'bg-blue-100 text-blue-800' :
+                    mainInfo?.color === 'green' ? 'bg-green-100 text-green-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {mainInfo?.category} • {mainInfo?.label}
+                  </span>
+                );
+              })()}
+            </div>
+            <div>
+              <span className="text-sm font-medium">부 포지션:</span>{' '}
               {formData.position_sub.length > 0 ? (
-                <span className="text-blue-600">
-                  {formData.position_sub.map(pos => 
-                    positions.find(p => p.value === pos)?.label
-                  ).join(', ')}
-                </span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {formData.position_sub.map(pos => {
+                    const subInfo = findPositionInfo(pos);
+                    return (
+                      <span 
+                        key={pos}
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          subInfo?.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                          subInfo?.color === 'blue' ? 'bg-blue-100 text-blue-800' :
+                          subInfo?.color === 'green' ? 'bg-green-100 text-green-800' :
+                          'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {subInfo?.label}
+                      </span>
+                    );
+                  })}
+                </div>
               ) : (
-                <span className="text-gray-500">선택하지 않음</span>
+                <span className="text-gray-500 text-sm">선택하지 않음</span>
               )}
-            </p>
+            </div>
           </div>
         </div>
 

@@ -13,14 +13,54 @@ const UserProfile = () => {
     return <ProfileEditForm onCancel={() => setIsEditing(false)} />;
   }
 
-  const getPositionKorean = (position: string) => {
-    const positionMap: { [key: string]: string } = {
-      'GK': '골키퍼',
-      'DF': '수비수',
-      'MF': '미드필더',
-      'FW': '공격수'
+  const positionData = {
+    // 골키퍼
+    'GK': { label: '골키퍼', category: '골키퍼', color: 'yellow', icon: '⚽' },
+    
+    // 수비수
+    'CB': { label: '센터백', category: '수비수', color: 'blue', icon: '🛡' },
+    'LB': { label: '왼쪽 풀백', category: '수비수', color: 'blue', icon: '🛡' },
+    'RB': { label: '오른쪽 풀백', category: '수비수', color: 'blue', icon: '🛡' },
+    'LWB': { label: '왼쪽 윙백', category: '수비수', color: 'blue', icon: '🛡' },
+    'RWB': { label: '오른쪽 윙백', category: '수비수', color: 'blue', icon: '🛡' },
+    
+    // 미드필더
+    'CDM': { label: '수비형 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'CM': { label: '중앙 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'CAM': { label: '공격형 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'LM': { label: '왼쪽 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'RM': { label: '오른쪽 미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    
+    // 공격수
+    'LW': { label: '왼쪽 윙어', category: '공격수', color: 'red', icon: '🚀' },
+    'RW': { label: '오른쪽 윙어', category: '공격수', color: 'red', icon: '🚀' },
+    'ST': { label: '스트라이커', category: '공격수', color: 'red', icon: '🚀' },
+    'CF': { label: '센터 포워드', category: '공격수', color: 'red', icon: '🚀' },
+    
+    // 기존 레거시 포지션들 (하위 호환성)
+    'DF': { label: '수비수', category: '수비수', color: 'blue', icon: '🛡' },
+    'MF': { label: '미드필더', category: '미드필더', color: 'green', icon: '🧠' },
+    'FW': { label: '공격수', category: '공격수', color: 'red', icon: '🚀' },
+  };
+
+  const getPositionInfo = (position: string) => {
+    return positionData[position as keyof typeof positionData] || { 
+      label: position, 
+      category: '기타', 
+      color: 'gray', 
+      icon: '⚪' 
     };
-    return positionMap[position] || position;
+  };
+
+  const getPositionBadgeColor = (color: string) => {
+    const colorMap = {
+      yellow: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      blue: 'bg-blue-100 text-blue-800 border-blue-200',
+      green: 'bg-green-100 text-green-800 border-green-200',
+      red: 'bg-red-100 text-red-800 border-red-200',
+      gray: 'bg-gray-100 text-gray-800 border-gray-200'
+    };
+    return colorMap[color as keyof typeof colorMap] || colorMap.gray;
   };
 
   const getLevelText = (level: number) => {
@@ -34,13 +74,15 @@ const UserProfile = () => {
     return levelMap[level] || `레벨 ${level}`;
   };
 
+  const mainPositionInfo = getPositionInfo(user.position_main);
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-800">프로필</h2>
         <div className="flex items-center space-x-2">
           {user.is_admin && (
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+            <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full border">
               관리자
             </span>
           )}
@@ -85,23 +127,31 @@ const UserProfile = () => {
         
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">주 포지션</label>
-          <div className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-            {getPositionKorean(user.position_main)}
+          <div className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium border ${getPositionBadgeColor(mainPositionInfo.color)}`}>
+            <span className="mr-2">{mainPositionInfo.icon}</span>
+            <div className="flex flex-col">
+              <span className="font-semibold">{mainPositionInfo.label}</span>
+              <span className="text-xs opacity-75">{mainPositionInfo.category}</span>
+            </div>
           </div>
         </div>
         
         {user.position_sub && user.position_sub.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">부 포지션</label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">부 포지션</label>
             <div className="flex flex-wrap gap-2">
-              {user.position_sub.map((pos, index) => (
-                <span 
-                  key={index}
-                  className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm"
-                >
-                  {getPositionKorean(pos)}
-                </span>
-              ))}
+              {user.position_sub.map((pos, index) => {
+                const posInfo = getPositionInfo(pos);
+                return (
+                  <span 
+                    key={index}
+                    className={`inline-flex items-center px-2 py-1 rounded text-sm border ${getPositionBadgeColor(posInfo.color)}`}
+                  >
+                    <span className="mr-1 text-xs">{posInfo.icon}</span>
+                    {posInfo.label}
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}
@@ -109,7 +159,7 @@ const UserProfile = () => {
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">실력 레벨</label>
           <div className="flex items-center space-x-2">
-            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">
+            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm border border-orange-200">
               {getLevelText(user.level)}
             </span>
             <div className="flex space-x-1">
