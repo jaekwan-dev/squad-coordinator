@@ -12,6 +12,22 @@ export class UsersService {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
     const supabaseKey = this.configService.get<string>('SUPABASE_SERVICE_KEY');
     
+    // 환경변수 디버깅 로그
+    console.log('🔍 Environment Variables Check:');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('SUPABASE_URL:', supabaseUrl ? 'Set ✅' : 'Missing ❌');
+    console.log('SUPABASE_SERVICE_KEY:', supabaseKey ? 'Set ✅' : 'Missing ❌');
+    
+    // 환경변수 유효성 검사
+    if (!supabaseUrl) {
+      throw new Error(`❌ SUPABASE_URL environment variable is required. Current value: ${supabaseUrl}`);
+    }
+    
+    if (!supabaseKey) {
+      throw new Error(`❌ SUPABASE_SERVICE_KEY environment variable is required. Current value: ${supabaseKey ? 'Set' : 'Missing'}`);
+    }
+    
+    console.log('✅ Supabase client initialized successfully');
     this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
