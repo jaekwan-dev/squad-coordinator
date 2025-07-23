@@ -6,14 +6,15 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // CORS 설정 (프로덕션 고려)
+  // CORS 설정 (Render 배포용)
   app.enableCors({
     origin: [
       'http://localhost:3000',
       'https://localhost:3000',
       process.env.FRONTEND_URL,
       /\.vercel\.app$/,
-      /\.railway\.app$/,
+      /\.render\.com$/,
+      /\.onrender\.com$/,
     ].filter(Boolean),
     credentials: true,
   });
@@ -38,7 +39,7 @@ async function bootstrap() {
   await app.listen(port);
   
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? `https://your-app.railway.app` 
+    ? `https://your-app.onrender.com` 
     : `http://localhost:${port}`;
     
   console.log(`🚀 SoccerSquad Backend is running on: ${baseUrl}`);
