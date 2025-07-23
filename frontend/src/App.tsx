@@ -1,8 +1,7 @@
-import React from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LoginButton from './components/LoginButton';
 import UserProfile from './components/UserProfile';
-import toast, { Toaster } from 'react-hot-toast';
+import Toaster from 'react-hot-toast';
 import './App.css';
 
 function AuthenticatedApp() {
