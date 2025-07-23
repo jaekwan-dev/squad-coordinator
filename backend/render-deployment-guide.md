@@ -44,14 +44,14 @@ SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 ```
 KAKAO_CLIENT_ID=f3faa68dd073b9ffdd2cfc7bfabdf07f
 KAKAO_CLIENT_SECRET=KWccHkGvlbPtKEug6pNRvPia5D96stLE
-KAKAO_CALLBACK_URL=https://soccersquad-backend.onrender.com/auth/kakao/callback
+KAKAO_CALLBACK_URL=https://squad-coordinator.onrender.com/auth/kakao/callback
 ```
 
 ### 🔐 JWT 및 서버 설정
 ```
 JWT_SECRET=soccer-squad-production-jwt-2025-render-secure
 NODE_ENV=production
-FRONTEND_URL=https://배포될프론트엔드도메인.vercel.app
+FRONTEND_URL=https://squad-coordinator.vercel.app
 ```
 
 ## 🌐 3단계: 배포 및 도메인 확인
@@ -64,7 +64,7 @@ FRONTEND_URL=https://배포될프론트엔드도메인.vercel.app
 ### 도메인 업데이트
 배포 완료 후 실제 도메인으로 환경변수 수정:
 ```
-KAKAO_CALLBACK_URL=https://실제도메인.onrender.com/auth/kakao/callback
+KAKAO_CALLBACK_URL=https://squad-coordinator.onrender.com/auth/kakao/callback
 ```
 
 ## 🔗 4단계: 카카오 개발자 콘솔 설정
@@ -74,7 +74,7 @@ KAKAO_CALLBACK_URL=https://실제도메인.onrender.com/auth/kakao/callback
 1. **SoccerSquad 앱** → **카카오 로그인** → **Redirect URI**
 2. 다음 URI 추가:
    ```
-   https://실제도메인.onrender.com/auth/kakao/callback
+   https://squad-coordinator.onrender.com/auth/kakao/callback
    ```
 
 ## 📱 5단계: 프론트엔드 연동
@@ -85,7 +85,7 @@ KAKAO_CALLBACK_URL=https://실제도메인.onrender.com/auth/kakao/callback
 VITE_API_BASE_URL=http://localhost:3001
 
 # 변경
-VITE_API_BASE_URL=https://실제도메인.onrender.com
+VITE_API_BASE_URL=https://squad-coordinator.onrender.com
 ```
 
 ## 🧪 6단계: 배포 테스트

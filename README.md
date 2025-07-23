@@ -29,7 +29,8 @@ fc-bro-manager/
 
 ### Backend  
 - **NestJS** + **TypeScript**
-- **Supabase** (데이터베이스 & 배포)
+- **Render** (배포)
+- **Supabase** (데이터베이스)
 - **카카오 OAuth API** (소셜 로그인)
 
 ## 🚀 개발 환경 설정
@@ -127,5 +128,16 @@ PORT=3001
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 ```
+
+## 🚀 프로덕션 배포
+
+### Backend (Render)
+- **배포 가이드**: [backend/render-deployment-guide.md](./backend/render-deployment-guide.md)
+- **무료 티어** 월 750시간 제공
+- **자동 배포** GitHub 연동
+
+### Frontend (Vercel)  
+- Vercel에 프론트엔드 배포
+- 환경변수에서 `VITE_API_BASE_URL`을 Render 도메인으로 설정
 
 🔗 **카카오 개발자 설정**: [KAKAO_SETUP.md](./KAKAO_SETUP.md) 참고 
