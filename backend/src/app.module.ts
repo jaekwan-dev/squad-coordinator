@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { MatchesModule } from './modules/matches/matches.module';
+import { AttendancesModule } from './modules/attendances/attendances.module';
 
 @Module({
   imports: [
@@ -12,9 +14,8 @@ import { UsersModule } from './modules/users/users.module';
     }),
     AuthModule,
     UsersModule,
-    // 향후 추가될 모듈들
-    // MatchesModule,
-    // TeamsModule,
+    MatchesModule,
+    AttendancesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

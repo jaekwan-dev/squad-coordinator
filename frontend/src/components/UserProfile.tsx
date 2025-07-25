@@ -133,7 +133,6 @@ const UserProfile = () => {
             <span className="mr-2">{mainPositionInfo.icon}</span>
             <div className="flex flex-col">
               <span className="font-semibold">{mainPositionInfo.label}</span>
-              <span className="text-xs opacity-75">{mainPositionInfo.category}</span>
             </div>
           </div>
         </div>
