@@ -1,76 +1,135 @@
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './contexts/AuthContext';
 import LoginButton from './components/LoginButton';
 import UserProfile from './components/UserProfile';
-import { Toaster } from 'react-hot-toast';
+import UpcomingMatch from './components/UpcomingMatch';
+import MatchesPage from './pages/MatchesPage';
+import MatchDetailPage from './pages/MatchDetailPage';
+import CreateMatchPage from './pages/CreateMatchPage';
 import './App.css';
 
-function AuthenticatedApp() {
-  const { user, isLoading } = useAuth();
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          <Toaster position="top-right" />
+          
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/matches" element={<MatchesPage />} />
+            <Route path="/matches/create" element={<CreateMatchPage />} />
+            <Route path="/matches/:id" element={<MatchDetailPage />} />
+            <Route path="/auth/success" element={<AuthSuccessPage />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
+}
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⚽</div>
-          <div className="text-lg text-gray-600">로딩 중...</div>
+// 홈페이지 컴포넌트
+function HomePage() {
+  return (
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">FC Bro Manager</h1>
+        <p className="text-gray-600">축구팀 관리 시스템</p>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* 다가오는 경기 */}
+        <div className="lg:col-span-2">
+          <UpcomingMatch />
+        </div>
+        
+        {/* 사용자 프로필 */}
+        <div>
+          <UserProfile />
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8">
-        <header className="text-center mb-8">
-          <div className="text-6xl mb-4">⚽</div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">SoccerSquad</h1>
-          <p className="text-gray-600 text-lg">축구 동호회 관리 시스템</p>
-        </header>
-        
-        <main className="max-w-2xl mx-auto">
-          {user ? (
-            // 로그인된 상태
-            <div className="space-y-8">
-              <UserProfile />
+      
+      {/* 빠른 네비게이션 */}
+      <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">빠른 메뉴</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <a
+            href="/matches"
+            className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            <span className="text-2xl">📅</span>
+            <div>
+              <div className="font-medium text-blue-800">경기 일정</div>
+              <div className="text-sm text-blue-600">모든 경기 보기</div>
             </div>
-          ) : (
-            // 로그인되지 않은 상태
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <p className="text-gray-600 text-center mb-8">
-                축구 동호회 관리 시스템을 이용하려면 카카오 계정으로 로그인해주세요.
-              </p>
-              
-              <div className="flex justify-center mb-8">
-                <LoginButton />
-              </div>
-              
-              
-            </div>
-          )}
+          </a>
           
-        </main>
+          <a
+            href="/matches"
+            className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+          >
+            <span className="text-2xl">🗳️</span>
+            <div>
+              <div className="font-medium text-green-800">참석 투표</div>
+              <div className="text-sm text-green-600">참석 의사 표시</div>
+            </div>
+          </a>
+          
+          <a
+            href="/"
+            className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors opacity-50 cursor-not-allowed"
+          >
+            <span className="text-2xl">👥</span>
+            <div>
+              <div className="font-medium text-purple-800">팀 편성</div>
+              <div className="text-sm text-purple-600">준비 중</div>
+            </div>
+          </a>
+          
+          <a
+            href="/"
+            className="flex items-center space-x-3 p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors opacity-50 cursor-not-allowed"
+          >
+            <span className="text-2xl">📊</span>
+            <div>
+              <div className="font-medium text-orange-800">통계</div>
+              <div className="text-sm text-orange-600">준비 중</div>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
   );
 }
 
-function App() {
+// 인증 성공 페이지
+function AuthSuccessPage() {
   return (
-    <AuthProvider>
-      <AuthenticatedApp />
-      <Toaster 
-        position="top-center"
-        reverseOrder={false}
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          }
-        }}
-      />
-    </AuthProvider>
+    <div className="max-w-md mx-auto p-6 min-h-screen flex items-center">
+      <div className="w-full">
+        <div className="text-center mb-6">
+          <div className="text-6xl mb-4">⚽</div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">FC Bro Manager</h1>
+          <p className="text-gray-600">축구팀 관리 시스템</p>
+        </div>
+        
+        <div className="space-y-4">
+          <LoginButton />
+          <UserProfile />
+        </div>
+        
+        <div className="mt-6 text-center">
+          <a
+            href="/"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            홈으로 가기 →
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
 
-export default App 
+export default App; 

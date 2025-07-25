@@ -1,19 +1,20 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { createClient } from '@supabase/supabase-js';
+import { ConfigService } from '@nestjs/config';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 
 @Injectable()
 export class MatchesService {
-  private supabase;
+  private supabase: SupabaseClient;
 
-  constructor() {
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  constructor(private readonly configService: ConfigService) {
+    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
+    const supabaseServiceKey = this.configService.get<string>('SUPABASE_SERVICE_KEY');
     
     console.log('🔍 [Matches Service] Initializing Supabase client');
-    console.log('🔍 [Matches Service] Supabase URL:', supabaseUrl ? 'Set' : 'Not set');
-    console.log('🔍 [Matches Service] Service Key:', supabaseServiceKey ? 'Set' : 'Not set');
+    console.log('🔍 [Matches Service] Supabase URL:', supabaseUrl ? 'Set ✅' : 'Not set ❌');
+    console.log('🔍 [Matches Service] Service Key:', supabaseServiceKey ? 'Set ✅' : 'Not set ❌');
     
     if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error('Supabase configuration is missing');

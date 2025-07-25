@@ -25,17 +25,11 @@ export class MatchesController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: '경기 생성 (관리자만 가능)' })
+  @ApiOperation({ summary: '경기 생성 (로그인 필요)' })
   @ApiResponse({ status: 201, description: '경기 생성 성공' })
   @ApiResponse({ status: 400, description: '잘못된 요청 데이터' })
   @ApiResponse({ status: 401, description: '인증 실패' })
-  @ApiResponse({ status: 403, description: '권한 없음 (관리자만 가능)' })
   async create(@Req() req, @Body() createMatchDto: CreateMatchDto) {
-    // 관리자 권한 확인
-    if (!req.user.is_admin) {
-      throw new Error('관리자만 경기를 생성할 수 있습니다.');
-    }
-    
     return this.matchesService.create(createMatchDto, req.user.id);
   }
 
